@@ -13,8 +13,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class MealDAOImpl implements MealDAO {
 
     private static MealDAOImpl ourInstance = new MealDAOImpl();
-    private CopyOnWriteArrayList<Meal> db;
-    private volatile AtomicInteger id;
+    private final CopyOnWriteArrayList<Meal> db;
+    private final AtomicInteger id;
 
     private MealDAOImpl() {
         db = new CopyOnWriteArrayList<>();
