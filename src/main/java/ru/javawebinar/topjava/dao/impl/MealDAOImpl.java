@@ -8,12 +8,13 @@ import java.time.Month;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class MealDAOImpl implements MealDAO {
 
     private static MealDAOImpl ourInstance = new MealDAOImpl();
     private CopyOnWriteArrayList<Meal> db;
-    private volatile int id;
+    private volatile AtomicInteger id;
 
     private MealDAOImpl() {
         db = new CopyOnWriteArrayList<>();
@@ -23,7 +24,7 @@ public class MealDAOImpl implements MealDAO {
         db.add(new Meal(4, LocalDateTime.of(2015, Month.MAY, 31, 10, 0), "Завтрак", 1000));
         db.add(new Meal(5, LocalDateTime.of(2015, Month.MAY, 31, 13, 0), "Обед", 500));
         db.add(new Meal(6, LocalDateTime.of(2015, Month.MAY, 31, 20, 0), "Ужин", 510));
-        id = 6;
+        id = new AtomicInteger(6);
     }
 
     public static MealDAOImpl getInstance() {
@@ -32,7 +33,7 @@ public class MealDAOImpl implements MealDAO {
 
     @Override
     public void add(Meal meal) {
-        meal.setId(generateId());
+        meal.setId(id.incrementAndGet());
         db.add(meal);
     }
 
@@ -76,9 +77,5 @@ public class MealDAOImpl implements MealDAO {
         if (!updated) {
             db.add(meal);
         }
-    }
-
-    private synchronized int generateId() {
-        return ++id;
     }
 }
