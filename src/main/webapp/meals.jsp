@@ -17,7 +17,7 @@
         <td></td>
     </tr>
     <c:forEach var="meal" items="${meals}">
-        ${meal.excess ? '<tr bgcolor="red">' : '<tr>'}
+        <tr ${meal.excess ? 'bgcolor="red"' : ''}>
         <td>${ldtf:formatLocalDateTime(meal.dateTime)}</td>
         <td>${meal.description}</td>
         <td>${meal.calories}</td>
