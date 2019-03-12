@@ -14,23 +14,21 @@
         <td>Дата</td>
         <td>Описание</td>
         <td>Кол-во калорий</td>
+        <td></td>
     </tr>
     <c:forEach var="meal" items="${meals}">
-        <c:choose>
-            <c:when test="${meal.excess}">
-                <tr bgcolor="red">
-            </c:when>
-            <c:otherwise>
-                <tr>
-            </c:otherwise>
-        </c:choose>
-        <td>
-            <a href="${pageContext.request.contextPath}/updateMeal?id=${meal.id}">${ldtf:formatLocalDateTime(meal.dateTime, "dd.MM.yyyy HH:mm")}</a>
-        </td>
+        ${meal.excess ? '<tr bgcolor="red">' : '<tr>'}
+        <td>${ldtf:formatLocalDateTime(meal.dateTime)}</td>
         <td>${meal.description}</td>
         <td>${meal.calories}</td>
+        <td>
+            <a href="${pageContext.request.contextPath}/meals?update&id=${meal.id}">Редактировать</a>
+            <a href="${pageContext.request.contextPath}/meals?remove&id=${meal.id}">Удалить</a>
+        </td>
         </tr>
     </c:forEach>
 </table>
+<br>
+<a href="${pageContext.request.contextPath}/meals?add"><button>Добавить</button></a>
 </body>
 </html>

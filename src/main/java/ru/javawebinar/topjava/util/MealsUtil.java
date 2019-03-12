@@ -12,22 +12,10 @@ import static java.util.stream.Collectors.toList;
 
 public class MealsUtil {
 
-    public static List<MealTo> getFilteredWithExcess(List<Meal> meals, int caloriesPerDay) {
-        Collection<List<Meal>> list = meals.stream()
-                .collect(Collectors.groupingBy(Meal::getDate)).values();
-
-        return list.stream().flatMap(dayMeals -> {
-            boolean excess = dayMeals.stream().mapToInt(Meal::getCalories).sum() > caloriesPerDay;
-            return dayMeals.stream()
-                    .map(meal -> createWithExcess(meal, excess));
-        }).collect(toList());
-    }
-
     public static List<MealTo> getFilteredWithExcess(List<Meal> meals, LocalTime startTime,
                                                      LocalTime endTime, int caloriesPerDay) {
         Collection<List<Meal>> list = meals.stream()
                 .collect(Collectors.groupingBy(Meal::getDate)).values();
-
         return list.stream().flatMap(dayMeals -> {
             boolean excess = dayMeals.stream().mapToInt(Meal::getCalories).sum() > caloriesPerDay;
             return dayMeals.stream().filter(meal ->
