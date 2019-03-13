@@ -28,7 +28,7 @@ public class MealServlet extends HttpServlet {
         Map<String, String[]> parameters = req.getParameterMap();
         if (parameters.containsKey("update")) {
             Integer id = Integer.parseInt(req.getParameter("id"));
-            Meal meal = mealDAO.getById(id);
+            Meal meal = mealDAO.get(id);
             req.setAttribute("meal", meal);
             req.getRequestDispatcher("/updateMealForm.jsp").forward(req, resp);
         } else if (parameters.containsKey("add")) {
@@ -36,9 +36,11 @@ public class MealServlet extends HttpServlet {
         } else if (parameters.containsKey("remove")) {
             Integer id = Integer.parseInt(req.getParameter("id"));
             mealDAO.delete(id);
-            showMeals(req, resp);
+            resp.sendRedirect(req.getContextPath() + "/meals");
         } else {
-            showMeals(req, resp);
+            List<MealTo> meals = getFilteredWithExcess(mealDAO.getAll(), LocalTime.MIN, LocalTime.MAX, 2000);
+            req.setAttribute("meals", meals);
+            req.getRequestDispatcher("/meals.jsp").forward(req, resp);
         }
     }
 
@@ -59,11 +61,5 @@ public class MealServlet extends HttpServlet {
             mealDAO.update(new Meal(mealId, dateTime, description, calories));
         }
         resp.sendRedirect(req.getContextPath() + "/meals");
-    }
-
-    private void showMeals(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        List<MealTo> meals = getFilteredWithExcess(mealDAO.getAll(), LocalTime.MIN, LocalTime.MAX, 2000);
-        req.setAttribute("meals", meals);
-        req.getRequestDispatcher("/meals.jsp").forward(req, resp);
     }
 }

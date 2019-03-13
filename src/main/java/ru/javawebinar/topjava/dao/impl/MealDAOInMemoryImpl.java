@@ -41,15 +41,13 @@ public class MealDAOInMemoryImpl implements MealDAO {
     }
 
     @Override
-    public Meal getById(Integer id) {
+    public Meal get(Integer id) {
         return db.get(id);
     }
 
     @Override
     public List<Meal> getAll() {
-        List<Meal> meals = new ArrayList<>();
-        db.forEach((integer, meal) -> meals.add(meal));
-        return meals;
+        return new ArrayList<>(db.values());
     }
 
     @Override

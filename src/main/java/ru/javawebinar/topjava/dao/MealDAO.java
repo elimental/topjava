@@ -8,7 +8,7 @@ public interface MealDAO {
 
     Meal add(Meal meal);
 
-    Meal getById(Integer id);
+    Meal get(Integer id);
 
     List<Meal> getAll();
 
