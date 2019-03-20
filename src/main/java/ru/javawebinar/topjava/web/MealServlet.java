@@ -20,36 +20,39 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Objects;
 
-import static ru.javawebinar.topjava.web.SecurityUtil.authUserId;
-
 @WebServlet(value = "/meals")
 public class MealServlet extends HttpServlet {
 
     private static final Logger log = LoggerFactory.getLogger(MealServlet.class);
     private MealRestController mealController;
+    private ClassPathXmlApplicationContext ctx;
 
     @Override
     public void init() throws ServletException {
-        ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("spring/spring-app.xml");
+        ctx = new ClassPathXmlApplicationContext("spring/spring-app.xml");
         mealController = ctx.getBean(MealRestController.class);
+    }
+
+    @Override
+    public void destroy() {
+        ctx.close();
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
         String action = request.getParameter("action");
-
         switch (action == null ? "all" : action) {
             case "filter":
                 String fromDateParam = request.getParameter("from_date");
                 String toDateParam = request.getParameter("to_date");
                 String fromTimeParam = request.getParameter("from_time");
                 String toTimeParam = request.getParameter("to_time");
-                LocalDate fromDate = fromDateParam.isEmpty() ? LocalDate.MIN : LocalDate.parse(fromDateParam);
-                LocalDate toDate = toDateParam.isEmpty() ? LocalDate.MAX : LocalDate.parse(toDateParam);
-                LocalTime fromTime = fromTimeParam.isEmpty() ? LocalTime.MIN : LocalTime.parse(fromTimeParam);
-                LocalTime toTime = toTimeParam.isEmpty() ? LocalTime.MAX : LocalTime.parse(toTimeParam);
-                List<MealTo> meals = mealController.getFiltered(fromDate, toDate, fromTime, toTime);
+                LocalDate fromDate = fromDateParam.isEmpty() ? null : LocalDate.parse(fromDateParam);
+                LocalDate toDate = toDateParam.isEmpty() ? null : LocalDate.parse(toDateParam);
+                LocalTime fromTime = fromTimeParam.isEmpty() ? null : LocalTime.parse(fromTimeParam);
+                LocalTime toTime = toTimeParam.isEmpty() ? null : LocalTime.parse(toTimeParam);
+                List<MealTo> meals = mealController.getFilteredByDateTime(fromDate, toDate, fromTime, toTime);
                 request.setAttribute("meals", meals);
                 request.getRequestDispatcher("/meals.jsp").forward(request, response);
                 break;
@@ -58,9 +61,13 @@ public class MealServlet extends HttpServlet {
                 Meal meal = new Meal(id.isEmpty() ? null : Integer.valueOf(id),
                         LocalDateTime.parse(request.getParameter("dateTime")),
                         request.getParameter("description"),
-                        Integer.parseInt(request.getParameter("calories")), authUserId());
+                        Integer.parseInt(request.getParameter("calories")));
                 log.info(meal.isNew() ? "Create {}" : "Update {}", meal);
-                mealController.save(meal);
+                if (meal.isNew()) {
+                    mealController.create(meal);
+                } else {
+                    mealController.update(meal);
+                }
                 response.sendRedirect("meals");
                 break;
         }
@@ -70,7 +77,6 @@ public class MealServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getParameter("action");
-
         switch (action == null ? "all" : action) {
             case "delete":
                 int id = getId(request);
@@ -81,7 +87,7 @@ public class MealServlet extends HttpServlet {
             case "create":
             case "update":
                 final Meal meal = "create".equals(action) ?
-                        new Meal(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES), "", 1000, authUserId()) :
+                        new Meal(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES), "", 1000) :
                         mealController.get(getId(request));
                 request.setAttribute("meal", meal);
                 request.getRequestDispatcher("/mealForm.jsp").forward(request, response);

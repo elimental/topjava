@@ -9,6 +9,8 @@ import ru.javawebinar.topjava.util.exception.NotFoundException;
 import java.time.LocalDate;
 import java.util.List;
 
+import static ru.javawebinar.topjava.util.ValidationUtil.checkNotFoundWithId;
+
 @Service
 public class MealServiceImpl implements MealService {
 
@@ -20,31 +22,32 @@ public class MealServiceImpl implements MealService {
     }
 
     @Override
-    public Meal createUpdate(Meal meal) {
-        return repository.save(meal);
+    public Meal create(Meal meal, int userId) {
+        return repository.save(meal, userId);
     }
 
     @Override
-    public void delete(Integer mealId, Integer userId) {
-        repository.delete(mealId, userId);
+    public void delete(int mealId, int userId) throws NotFoundException {
+        checkNotFoundWithId(repository.delete(mealId, userId), mealId);
     }
 
     @Override
-    public Meal get(Integer mealId, Integer userId) {
-        Meal meal = repository.get(mealId, userId);
-        if (meal == null) {
-            throw new NotFoundException(String.format("Wrong mealId %s for userId %s", mealId, userId));
-        }
-        return meal;
+    public Meal get(int mealId, int userId) throws NotFoundException {
+        return checkNotFoundWithId(repository.get(mealId, userId), mealId);
     }
 
     @Override
-    public List<Meal> getAll(Integer userId) {
+    public void update(Meal meal, int userId) {
+        checkNotFoundWithId(repository.save(meal, userId), meal.getId());
+    }
+
+    @Override
+    public List<Meal> getAll(int userId) {
         return repository.getAll(userId);
     }
 
     @Override
-    public List<Meal> getFilteredByDate(Integer userId, LocalDate fromDate, LocalDate toDate) {
+    public List<Meal> getFilteredByDate(int userId, LocalDate fromDate, LocalDate toDate) {
         return repository.getFilteredByDate(userId, fromDate, toDate);
     }
 }

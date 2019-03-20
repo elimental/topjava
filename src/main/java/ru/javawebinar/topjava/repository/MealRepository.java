@@ -7,13 +7,13 @@ import java.util.List;
 
 public interface MealRepository {
 
-    Meal save(Meal meal);
+    Meal save(Meal meal, int userId);
 
-    boolean delete(Integer mealId, Integer userId);
+    boolean delete(int mealId, int userId);
 
-    Meal get(Integer mealId, Integer userId);
+    Meal get(int mealId, int userId);
 
-    List<Meal> getAll(Integer userId);
+    List<Meal> getAll(int userId);
 
-    List<Meal> getFilteredByDate(Integer userId, LocalDate fromDate, LocalDate toDate);
+    List<Meal> getFilteredByDate(int userId, LocalDate fromDate, LocalDate toDate);
 }

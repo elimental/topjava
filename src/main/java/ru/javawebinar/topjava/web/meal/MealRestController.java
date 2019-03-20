@@ -7,13 +7,14 @@ import org.springframework.stereotype.Controller;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.service.MealService;
 import ru.javawebinar.topjava.to.MealTo;
-import ru.javawebinar.topjava.util.MealsUtil;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
 import static ru.javawebinar.topjava.util.MealsUtil.getFilteredWithExcess;
+import static ru.javawebinar.topjava.util.MealsUtil.getWithExcess;
+import static ru.javawebinar.topjava.util.ValidationUtil.checkNew;
 import static ru.javawebinar.topjava.web.SecurityUtil.authUserCaloriesPerDay;
 import static ru.javawebinar.topjava.web.SecurityUtil.authUserId;
 
@@ -29,22 +30,37 @@ public class MealRestController {
     }
 
     public List<MealTo> getAll() {
-        return MealsUtil.getWithExcess(service.getAll(authUserId()), authUserCaloriesPerDay());
-    }
-
-    public void delete(int mealId) {
-        service.delete(mealId, authUserId());
+        log.info("getAll");
+        return getWithExcess(service.getAll(authUserId()), authUserCaloriesPerDay());
     }
 
     public Meal get(int id) {
+        log.info("get {}", id);
         return service.get(id, authUserId());
     }
 
-    public Meal save(Meal meal) {
-        return service.createUpdate(meal);
+    public Meal create(Meal meal) {
+        log.info("create {}", meal);
+        checkNew(meal);
+        return service.create(meal, authUserId());
     }
 
-    public List<MealTo> getFiltered(LocalDate fromDate, LocalDate toDate, LocalTime fromTime, LocalTime toTime) {
+    public void delete(int id) {
+        log.info("delete {}", id);
+        service.delete(id, authUserId());
+    }
+
+    public void update(Meal meal) {
+        log.info("update {}", meal.getId());
+        service.update(meal, authUserId());
+    }
+
+    public List<MealTo> getFilteredByDateTime(LocalDate fromDate, LocalDate toDate, LocalTime fromTime, LocalTime toTime) {
+        fromDate = fromDate == null ? LocalDate.MIN : fromDate;
+        toDate = toDate == null ? LocalDate.MAX : toDate;
+        fromTime = fromTime == null ? LocalTime.MIN : fromTime;
+        toTime = toTime == null ? LocalTime.parse("23:59:59") : toTime;
+        log.info("getFiltered fromDate {} toDate {} fromTime {} toTime {}", fromDate, toDate, fromTime, toTime);
         return getFilteredWithExcess(service.getFilteredByDate(authUserId(), fromDate, toDate),
                 authUserCaloriesPerDay(), fromTime, toTime);
     }
