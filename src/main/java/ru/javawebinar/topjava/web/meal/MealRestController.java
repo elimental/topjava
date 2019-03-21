@@ -59,7 +59,7 @@ public class MealRestController {
         fromDate = fromDate == null ? LocalDate.MIN : fromDate;
         toDate = toDate == null ? LocalDate.MAX : toDate;
         fromTime = fromTime == null ? LocalTime.MIN : fromTime;
-        toTime = toTime == null ? LocalTime.parse("23:59:59") : toTime;
+        toTime = toTime == null ? LocalTime.MAX : toTime;
         log.info("getFiltered fromDate {} toDate {} fromTime {} toTime {}", fromDate, toDate, fromTime, toTime);
         return getFilteredWithExcess(service.getFilteredByDate(authUserId(), fromDate, toDate),
                 authUserCaloriesPerDay(), fromTime, toTime);
