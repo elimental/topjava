@@ -4,12 +4,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit4.SpringRunner;
-import ru.javawebinar.topjava.MealTestData;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
@@ -18,8 +16,8 @@ import java.time.Month;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static ru.javawebinar.topjava.MealTestData.testMeals;
+import static ru.javawebinar.topjava.MealTestData.assertMatch;
+import static ru.javawebinar.topjava.MealTestData.getTestMeals;
 import static ru.javawebinar.topjava.UserTestData.ADMIN_ID;
 import static ru.javawebinar.topjava.UserTestData.USER_ID;
 
@@ -43,8 +41,8 @@ public class MealServiceImplTest {
     @Test
     public void get() {
         Meal actual = service.get(100002, USER_ID);
-        Meal expected = testMeals.get(0);
-        assertEquals(actual, expected);
+        Meal expected = getTestMeals().get(0);
+        assertMatch(actual, expected);
     }
 
     @Test(expected = NotFoundException.class)
@@ -57,9 +55,10 @@ public class MealServiceImplTest {
         service.delete(100002, USER_ID);
         List<Meal> actual = service.getAll(USER_ID);
         List<Meal> expected = new ArrayList<>();
+        List<Meal> testMeals = getTestMeals();
         expected.add(testMeals.get(2));
         expected.add(testMeals.get(1));
-        assertEquals(actual, expected);
+        assertMatch(actual, expected);
     }
 
     @Test(expected = NotFoundException.class)
@@ -72,19 +71,21 @@ public class MealServiceImplTest {
         List<Meal> actual = service.getBetweenDateTimes(LocalDateTime.of(2018, Month.MAY, 16, 9, 0),
                 LocalDateTime.of(2018, Month.MAY, 16, 13, 0), USER_ID);
         List<Meal> expected = new ArrayList<>();
+        List<Meal> testMeals = getTestMeals();
         expected.add(testMeals.get(1));
         expected.add(testMeals.get(0));
-        assertEquals(actual, expected);
+        assertMatch(actual, expected);
     }
 
     @Test
     public void getAll() {
         List<Meal> actual = service.getAll(USER_ID);
         List<Meal> expected = new ArrayList<>();
+        List<Meal> testMeals = getTestMeals();
         expected.add(testMeals.get(2));
         expected.add(testMeals.get(1));
         expected.add(testMeals.get(0));
-        assertEquals(actual, expected);
+        assertMatch(actual, expected);
     }
 
     @Test
@@ -93,9 +94,10 @@ public class MealServiceImplTest {
         mealForUpdate.setCalories(502);
         service.update(mealForUpdate, USER_ID);
         Meal actual = service.get(100002, USER_ID);
+        List<Meal> testMeals = getTestMeals();
         Meal expected = testMeals.get(0);
         expected.setCalories(502);
-        MealTestData.assertMatch(actual, expected);
+        assertMatch(actual, expected);
     }
 
     @Test(expected = NotFoundException.class)
@@ -110,6 +112,6 @@ public class MealServiceImplTest {
         Meal actual = service.get(100008, USER_ID);
         Meal expected = newMeal;
         newMeal.setId(100008);
-        assertEquals(actual, expected);
+        assertMatch(actual, expected);
     }
 }
