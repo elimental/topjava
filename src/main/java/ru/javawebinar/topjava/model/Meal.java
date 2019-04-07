@@ -1,19 +1,52 @@
 package ru.javawebinar.topjava.model;
 
-import javax.persistence.FetchType;
-import javax.persistence.ManyToOne;
+import com.sun.xml.internal.ws.api.model.MEP;
+
+import javax.persistence.*;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
+@Entity
+@Table(name = "meals", uniqueConstraints = {@UniqueConstraint(columnNames = {"user_id", "date_time"},
+        name = "meals_unique_user_datetime_idx")})
+@NamedQueries({
+        @NamedQuery(name = Meal.UPDATE, query = "UPDATE Meal m SET m.dateTime=:date_time, " +
+                "m.description=:description, m.calories=:calories WHERE m.id=:meal_id AND m.user.id=:user_id"),
+        @NamedQuery(name = Meal.DELETE, query = "DELETE FROM Meal m WHERE m.id=:meal_id AND m.user.id=:user_id"),
+        @NamedQuery(name = Meal.SELECT, query = "SELECT m FROM Meal m WHERE m.id=:meal_id AND m.user.id=:user_id"),
+        @NamedQuery(name = Meal.ALL_SORTED, query = "SELECT m FROM Meal m WHERE m.user.id=:user_id" +
+                " ORDER BY m.dateTime DESC"),
+        @NamedQuery(name = Meal.GET_BETWEEN, query = "SELECT m FROM Meal m WHERE m.user.id=:user_id" +
+                " AND m.dateTime >=:start_date AND m.dateTime <=:end_date ORDER BY m.dateTime DESC")
+})
 public class Meal extends AbstractBaseEntity {
+
+    public static final String UPDATE = "Meal.update";
+    public static final String DELETE = "Meal.delete";
+    public static final String SELECT = "Meal.select";
+    public static final String ALL_SORTED = "Meal.getAllSorted";
+    public static final String GET_BETWEEN = "Meal.getBetween";
+
+    @Column(name = "date_time", nullable = false, unique = true)
+    @NotNull
     private LocalDateTime dateTime;
 
+    @Column(name = "description", nullable = false)
+    @NotNull
+    @NotBlank
     private String description;
 
+    @Column(name = "calories")
+    @Min(value = 0)
     private int calories;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    @NotNull
     private User user;
 
     public Meal() {
