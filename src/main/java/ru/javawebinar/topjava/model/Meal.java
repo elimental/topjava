@@ -1,7 +1,5 @@
 package ru.javawebinar.topjava.model;
 
-import com.sun.xml.internal.ws.api.model.MEP;
-
 import javax.persistence.*;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
@@ -14,8 +12,6 @@ import java.time.LocalTime;
 @Table(name = "meals", uniqueConstraints = {@UniqueConstraint(columnNames = {"user_id", "date_time"},
         name = "meals_unique_user_datetime_idx")})
 @NamedQueries({
-        @NamedQuery(name = Meal.UPDATE, query = "UPDATE Meal m SET m.dateTime=:date_time, " +
-                "m.description=:description, m.calories=:calories WHERE m.id=:meal_id AND m.user.id=:user_id"),
         @NamedQuery(name = Meal.DELETE, query = "DELETE FROM Meal m WHERE m.id=:meal_id AND m.user.id=:user_id"),
         @NamedQuery(name = Meal.SELECT, query = "SELECT m FROM Meal m WHERE m.id=:meal_id AND m.user.id=:user_id"),
         @NamedQuery(name = Meal.ALL_SORTED, query = "SELECT m FROM Meal m WHERE m.user.id=:user_id" +
@@ -25,7 +21,6 @@ import java.time.LocalTime;
 })
 public class Meal extends AbstractBaseEntity {
 
-    public static final String UPDATE = "Meal.update";
     public static final String DELETE = "Meal.delete";
     public static final String SELECT = "Meal.select";
     public static final String ALL_SORTED = "Meal.getAllSorted";

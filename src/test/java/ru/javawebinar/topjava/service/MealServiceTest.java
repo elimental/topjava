@@ -4,7 +4,9 @@ import org.junit.AfterClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.junit.rules.Stopwatch;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -12,7 +14,7 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import ru.javawebinar.topjava.model.Meal;
-import ru.javawebinar.topjava.rule.DurationRule;
+import ru.javawebinar.topjava.rule.TestStopWatch;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.time.LocalDate;
@@ -20,6 +22,7 @@ import java.time.Month;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.slf4j.LoggerFactory.getLogger;
 import static ru.javawebinar.topjava.MealTestData.*;
 import static ru.javawebinar.topjava.UserTestData.ADMIN_ID;
 import static ru.javawebinar.topjava.UserTestData.USER_ID;
@@ -32,23 +35,24 @@ import static ru.javawebinar.topjava.UserTestData.USER_ID;
 @Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
 public class MealServiceTest {
 
-    private static Map<String, Long> testMethodDurationMap = new HashMap<>();
+    private static final Logger log = getLogger(MealServiceTest.class);
+
+    private static Map<String, Long> testMethodDuration = new HashMap<>();
 
     static {
         SLF4JBridgeHandler.install();
     }
 
     @Rule
-    public DurationRule durationRule = new DurationRule(testMethodDurationMap);
+    public Stopwatch stopwatch = new TestStopWatch(testMethodDuration);
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
     @AfterClass
     public static void printTestDurationResult() {
-        System.err.println("----------------TEST DURATION RESULTS----------------");
-        for (Map.Entry<String, Long> entry : testMethodDurationMap.entrySet()) {
-            System.err.println(String.format("Test name: %s. Duration: %s ms", entry.getKey(), entry.getValue()));
+        for (Map.Entry<String, Long> entry : testMethodDuration.entrySet()) {
+            log.info("Test method name: {}. Duration {}.", entry.getKey(), entry.getValue());
         }
     }
 
