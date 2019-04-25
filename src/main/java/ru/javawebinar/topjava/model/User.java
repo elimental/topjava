@@ -54,7 +54,7 @@ public class User extends AbstractNamedEntity {
     private int caloriesPerDay = DEFAULT_CALORIES_PER_DAY;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
-    @OrderBy(value = "dateTime")
+    @OrderBy(value = "dateTime DESC")
     private List<Meal> meals;
 
     public User() {
@@ -124,6 +124,10 @@ public class User extends AbstractNamedEntity {
 
     public void setRoles(Collection<Role> roles) {
         this.roles = CollectionUtils.isEmpty(roles) ? EnumSet.noneOf(Role.class) : EnumSet.copyOf(roles);
+    }
+
+    public List<Meal> getMeals() {
+        return meals;
     }
 
     @Override
