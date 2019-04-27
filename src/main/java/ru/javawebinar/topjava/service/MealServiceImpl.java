@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import ru.javawebinar.topjava.model.Meal;
-import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.MealRepository;
 import ru.javawebinar.topjava.repository.UserRepository;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
@@ -34,9 +33,7 @@ public class MealServiceImpl implements MealService {
 
     @Override
     public Meal getWithUser(int id, int userId) throws NotFoundException {
-        Meal meal = repository.get(id, userId);
-        meal.setUser(userRepository.get(userId));
-        return meal;
+        return checkNotFoundWithId(repository.getWithUser(id, userId), id);
     }
 
     @Override

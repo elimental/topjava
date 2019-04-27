@@ -43,11 +43,6 @@ public class JpaUserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public User getWithMeal(int id) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     @Transactional
     public boolean delete(int id) {
 

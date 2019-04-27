@@ -1,16 +1,19 @@
-package ru.javawebinar.topjava.service;
+package ru.javawebinar.topjava.service.datajpa;
 
 import org.junit.Test;
 import org.springframework.test.context.ActiveProfiles;
+import ru.javawebinar.topjava.ActiveDbProfileResolver;
+import ru.javawebinar.topjava.Profiles;
 import ru.javawebinar.topjava.UserTestData;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.model.User;
+import ru.javawebinar.topjava.service.AbstractMealServiceTest;
+import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import static ru.javawebinar.topjava.MealTestData.*;
-import static ru.javawebinar.topjava.UserTestData.ADMIN;
-import static ru.javawebinar.topjava.UserTestData.ADMIN_ID;
+import static ru.javawebinar.topjava.UserTestData.*;
 
-@ActiveProfiles({"postgres", "datajpa"})
+@ActiveProfiles(Profiles.DATAJPA)
 public class DataJPAMealServiceTest extends AbstractMealServiceTest {
 
     @Test
@@ -19,5 +22,11 @@ public class DataJPAMealServiceTest extends AbstractMealServiceTest {
         User actualUser = actualMeal.getUser();
         assertMatch(actualMeal, ADMIN_MEAL1);
         UserTestData.assertMatch(actualUser, ADMIN);
+    }
+
+    @Test
+    public void getWithUserNotFound() {
+        thrown.expect(NotFoundException.class);
+        service.getWithUser(ADMIN_MEAL_ID, USER_ID);
     }
 }
