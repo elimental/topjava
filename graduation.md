@@ -1,4 +1,4 @@
-## Выпускной проект
+/home/elimental/Downloads/patch/6_02_HW5_profile_test.patch## Выпускной проект
 Design and implement a REST API using Hibernate/Spring/SpringMVC (or Spring-Boot) **without frontend**.
 
 The task is:
