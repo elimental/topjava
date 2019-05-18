@@ -13,7 +13,7 @@
     <h3><a href="index.html"><spring:message code="app.home"/></a></h3>
     <spring:message code="app.mealForm.create" var="create"/>
     <spring:message code="app.mealForm.edit" var="edit"/>
-    <h2>${meal.id == null ? create : edit}</h2>
+    <h2>${meal.isNew() ? create : edit}</h2>
     <hr>
     <jsp:useBean id="meal" type="ru.javawebinar.topjava.model.Meal" scope="request"/>
     <form method="post" action="${pageContext.request.contextPath}/meals">
