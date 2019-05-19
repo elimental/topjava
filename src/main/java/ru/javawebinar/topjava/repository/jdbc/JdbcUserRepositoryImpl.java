@@ -50,15 +50,14 @@ public class JdbcUserRepositoryImpl implements UserRepository {
         if (user.isNew()) {
             Number newKey = insertUser.executeAndReturnKey(parameterSource);
             user.setId(newKey.intValue());
-            insertRoles(user);
         } else if (namedParameterJdbcTemplate.update(
                 "UPDATE users SET name=:name, email=:email, password=:password, " +
                         "registered=:registered, enabled=:enabled, calories_per_day=:caloriesPerDay WHERE id=:id", parameterSource) == 0) {
             return null;
         } else {
             deleteRoles(user);
-            insertRoles(user);
         }
+        insertRoles(user);
         return user;
     }
 
@@ -75,11 +74,7 @@ public class JdbcUserRepositoryImpl implements UserRepository {
         if (user == null) {
             return null;
         }
-        Set<Role> roles = new HashSet<>();
-        jdbcTemplate.query("SELECT role FROM user_roles WHERE user_id = ?", new Object[]{id}, rs -> {
-            roles.add(Role.valueOf(rs.getString("role")));
-        });
-        user.setRoles(roles);
+        user.setRoles(getUserRoles(user));
         return user;
     }
 
@@ -90,12 +85,16 @@ public class JdbcUserRepositoryImpl implements UserRepository {
         if (user == null) {
             return null;
         }
-        Set<Role> roles = new HashSet<>();
+        user.setRoles(getUserRoles(user));
+        return user;
+    }
+
+    private Set<Role> getUserRoles(User user) {
+        Set<Role> roles = EnumSet.noneOf(Role.class);
         jdbcTemplate.query("SELECT role FROM user_roles WHERE user_id = ?", new Object[]{user.getId()}, rs -> {
             roles.add(Role.valueOf(rs.getString("role")));
         });
-        user.setRoles(roles);
-        return user;
+        return roles;
     }
 
     @Override
@@ -103,7 +102,7 @@ public class JdbcUserRepositoryImpl implements UserRepository {
         List<User> users = jdbcTemplate.query("SELECT * FROM users ORDER BY name, email", ROW_MAPPER);
         Map<Integer, Set<Role>> userRoles = new HashMap<>();
         jdbcTemplate.query("SELECT * FROM user_roles", rs -> {userRoles.computeIfAbsent(rs.getInt("user_id"),
-                key -> new HashSet<>()).add(Role.valueOf(rs.getString("role")));});
+                key -> EnumSet.noneOf(Role.class)).add(Role.valueOf(rs.getString("role")));});
         users.forEach(user -> user.setRoles(userRoles.get(user.getId())));
         return users;
     }
