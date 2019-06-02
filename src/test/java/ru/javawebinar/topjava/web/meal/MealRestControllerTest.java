@@ -74,7 +74,7 @@ class MealRestControllerTest extends AbstractControllerTest {
 
     @Test
     void testCreate() throws Exception {
-        Meal expected = new Meal(of(2015, Month.MAY, 05, 15, 0), "Обед", 300);
+        Meal expected = new Meal(of(2015, Month.MAY, 5, 15, 0), "Обед", 300);
         ResultActions action = mockMvc.perform(post(REST_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(expected)))
