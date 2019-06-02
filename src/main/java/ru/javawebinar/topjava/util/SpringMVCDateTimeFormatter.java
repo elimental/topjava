@@ -3,7 +3,9 @@ package ru.javawebinar.topjava.util;
 import org.springframework.format.Formatter;
 
 import java.text.ParseException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
 public class SpringMVCDateTimeFormatter implements Formatter<LocalDateTime> {
@@ -15,6 +17,6 @@ public class SpringMVCDateTimeFormatter implements Formatter<LocalDateTime> {
 
     @Override
     public String print(LocalDateTime object, Locale locale) {
-        return null;
+        return DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm", locale).format(object);
     }
 }

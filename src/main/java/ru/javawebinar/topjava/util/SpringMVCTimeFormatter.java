@@ -4,6 +4,7 @@ import org.springframework.format.Formatter;
 
 import java.text.ParseException;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
 public class SpringMVCTimeFormatter implements Formatter<LocalTime> {
@@ -15,6 +16,6 @@ public class SpringMVCTimeFormatter implements Formatter<LocalTime> {
 
     @Override
     public String print(LocalTime object, Locale locale) {
-        return null;
+        return DateTimeFormatter.ofPattern("HH:mm", locale).format(object);
     }
 }
