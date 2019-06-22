@@ -7,9 +7,6 @@
 <body>
 <script type="text/javascript" src="resources/js/topjava.common.js" defer></script>
 <script type="text/javascript" src="resources/js/topjava.meals.js" defer></script>
-<script>
-    $('#dateTimePicker').datetimepicker();
-</script>
 <jsp:include page="fragments/bodyHeader.jsp"/>
 <div class="jumbotron pt-4">
     <div class="container">
@@ -38,8 +35,8 @@
                 </form>
             </div>
             <div class="card-footer text-right">
-                <button class="btn btn-danger"><spring:message code="meal.resetFilter"/></button>
-                <button class="btn btn-primary" onclick="resetFilter()"><spring:message code="meal.filter"/></button>
+                <button class="btn btn-danger" onclick="resetFilter()"><spring:message code="meal.resetFilter"/></button>
+                <button class="btn btn-primary" onclick="filterTable()"><spring:message code="meal.filter"/></button>
             </div>
         </div>
     </div>

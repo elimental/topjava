@@ -33,3 +33,17 @@ $(function () {
         }
     );
 });
+
+function resetFilter () {
+    $('#filter')[0].reset()
+    $.get("ajax/profile/meals/", updateTableByData);
+
+}
+
+function filterTable() {
+    $.ajax({
+        type: "GET",
+        url: "ajax/profile/meals/filter",
+        data: $("#filter").serialize()
+    }).done(updateTableByData)
+}
