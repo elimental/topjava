@@ -25,13 +25,7 @@ $(function () {
             "info": true,
             "columns": [
                 {
-                    "data": "dateTime",
-                    "render": function (date, type, row) {
-                        if (type === "display") {
-                            return date.replace("T", " ");
-                        }
-                        return date;
-                    }
+                    "data": "dateTime"
                 },
                 {
                     "data": "description"
@@ -64,4 +58,40 @@ $(function () {
             $.get(mealsAjaxUrl, updateTableByData);
         }
     });
+});
+
+$('#dateTime').datetimepicker({
+    format: 'Y-m-d\\TH:i'
+});
+
+$('#startDate').datetimepicker({
+    timepicker: false,
+    format: 'Y-m-d'
+});
+
+$('#endDate').datetimepicker({
+    timepicker: false,
+    format: 'Y-m-d'
+});
+
+$('#startTime').datetimepicker({
+    datepicker: false,
+    format: 'H:i'
+});
+
+$('#endTime').datetimepicker({
+    datepicker: false,
+    format: 'H:i'
+});
+
+$.ajaxSetup({
+    converters: {
+        "text json": function (s) {
+            json = JSON.parse(s);
+            $(json).each(function () {
+                this.dateTime = this.dateTime.replace('T', ' ').substr(0, 16);
+            });
+            return json;
+        }
+    }
 });
