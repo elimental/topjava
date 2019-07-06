@@ -28,12 +28,24 @@ public class MealTo extends BaseTo {
         return dateTime;
     }
 
+    public void setDateTime(LocalDateTime dateTime) {
+        this.dateTime = dateTime;
+    }
+
     public String getDescription() {
         return description;
     }
 
-    public int getCalories() {
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Integer getCalories() {
         return calories;
+    }
+
+    public void setCalories(Integer calories) {
+        this.calories = calories;
     }
 
     public boolean isExcess() {
