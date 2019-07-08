@@ -61,25 +61,16 @@ $(function () {
 });
 
 $('#dateTime').datetimepicker({
-    format: 'Y-m-d\\TH:i'
+    format: 'Y-m-d H:i'
+
 });
 
-$('#startDate').datetimepicker({
+$('#startDate, #endDate').datetimepicker({
     timepicker: false,
     format: 'Y-m-d'
 });
 
-$('#endDate').datetimepicker({
-    timepicker: false,
-    format: 'Y-m-d'
-});
-
-$('#startTime').datetimepicker({
-    datepicker: false,
-    format: 'H:i'
-});
-
-$('#endTime').datetimepicker({
+$('#startTime, #endTime').datetimepicker({
     datepicker: false,
     format: 'H:i'
 });

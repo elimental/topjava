@@ -40,11 +40,11 @@ public class MealTo extends BaseTo {
         this.description = description;
     }
 
-    public Integer getCalories() {
+    public int getCalories() {
         return calories;
     }
 
-    public void setCalories(Integer calories) {
+    public void setCalories(int calories) {
         this.calories = calories;
     }
 
