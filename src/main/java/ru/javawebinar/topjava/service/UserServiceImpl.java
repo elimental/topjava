@@ -19,8 +19,8 @@ import java.util.List;
 
 import static ru.javawebinar.topjava.util.UserUtil.prepareToSave;
 import static ru.javawebinar.topjava.util.UserUtil.updateFromTo;
-import static ru.javawebinar.topjava.util.ValidationUtil.checkNotFound;
-import static ru.javawebinar.topjava.util.ValidationUtil.checkNotFoundWithId;
+import static ru.javawebinar.topjava.web.ValidationUtil.checkNotFound;
+import static ru.javawebinar.topjava.web.ValidationUtil.checkNotFoundWithId;
 
 @Service("userService")
 public class UserServiceImpl implements UserService, UserDetailsService {

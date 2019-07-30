@@ -46,17 +46,18 @@ public class RootController extends AbstractUserController {
 
     @PostMapping("/profile")
     public String updateProfile(@Valid UserTo userTo, BindingResult result, SessionStatus status) {
-        if (!result.hasErrors()) {
-            try {
-                super.update(userTo, SecurityUtil.authUserId());
-                SecurityUtil.get().update(userTo);
-                status.setComplete();
-                return "redirect:meals";
-            } catch (DataIntegrityViolationException e) {
-                result.rejectValue("email", "exception.wrong_email");
-            }
+        if (result.hasErrors()) {
+            return "profile";
         }
-        return "profile";
+        try {
+            super.update(userTo, SecurityUtil.authUserId());
+            SecurityUtil.get().update(userTo);
+            status.setComplete();
+            return "redirect:meals";
+        } catch (DataIntegrityViolationException e) {
+            result.rejectValue("email", "exception.wrongEmail");
+            return "profile";
+        }
     }
 
     @GetMapping("/register")
@@ -68,16 +69,18 @@ public class RootController extends AbstractUserController {
 
     @PostMapping("/register")
     public String saveRegister(@Valid UserTo userTo, BindingResult result, SessionStatus status, ModelMap model) {
-        if (!result.hasErrors()) {
-            try {
-                super.create(UserUtil.createNewFromTo(userTo));
-                status.setComplete();
-                return "redirect:login?message=app.registered&username=" + userTo.getEmail();
-            } catch (DataIntegrityViolationException e) {
-                result.rejectValue("email", "exception.wrong_email");
-            }
+        if (result.hasErrors()) {
+            model.addAttribute("register", true);
+            return "profile";
         }
-        model.addAttribute("register", true);
-        return "profile";
+        try {
+            super.create(UserUtil.createNewFromTo(userTo));
+            status.setComplete();
+            return "redirect:login?message=app.registered&username=" + userTo.getEmail();
+        } catch (DataIntegrityViolationException e) {
+            result.rejectValue("email", "exception.wrongEmail");
+            model.addAttribute("register", true);
+            return "profile";
+        }
     }
 }

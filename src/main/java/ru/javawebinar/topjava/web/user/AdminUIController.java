@@ -2,8 +2,6 @@ package ru.javawebinar.topjava.web.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -42,15 +40,10 @@ public class AdminUIController extends AbstractUserController {
 
     @PostMapping
     public void createOrUpdate(@Valid UserTo userTo) {
-        try {
-            if (userTo.isNew()) {
-                super.create(UserUtil.createNewFromTo(userTo));
-            } else {
-                super.update(userTo, userTo.getId());
-            }
-        } catch (DataIntegrityViolationException e) {
-            throw new DataIntegrityViolationException(messageSource.getMessage("exception.wrong_email",
-                    null, LocaleContextHolder.getLocale()));
+        if (userTo.isNew()) {
+            super.create(UserUtil.createNewFromTo(userTo));
+        } else {
+            super.update(userTo, userTo.getId());
         }
     }
 

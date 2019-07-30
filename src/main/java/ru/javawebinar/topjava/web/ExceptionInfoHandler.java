@@ -2,6 +2,7 @@ package ru.javawebinar.topjava.web;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -9,14 +10,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
-import ru.javawebinar.topjava.util.ValidationUtil;
 import ru.javawebinar.topjava.util.exception.ErrorInfo;
 import ru.javawebinar.topjava.util.exception.ErrorType;
 import ru.javawebinar.topjava.util.exception.IllegalRequestDataException;
@@ -24,15 +23,21 @@ import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import javax.servlet.http.HttpServletRequest;
 
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
 import static ru.javawebinar.topjava.util.exception.ErrorType.*;
 
 @RestControllerAdvice(annotations = RestController.class)
 @Order(Ordered.HIGHEST_PRECEDENCE + 5)
 public class ExceptionInfoHandler {
+
     private static Logger log = LoggerFactory.getLogger(ExceptionInfoHandler.class);
+
+    public static final String WRONG_EMAIL_MSG = "exception.wrongEmail";
+    public static final String WRONG_DATE_TIME_MSG = "exception.wrongDatetime";
+    private static final String EMAIL_CONSTRAINT_DB_EXCEPTION = "users_unique_email_idx";
+    private static final String DATE_TIME_CONSTRAINT_DB_EXCEPTION = "meals_unique_user_datetime_idx";
+
+    @Autowired
+    private MsgUtil msgUtil;
 
     //  http://stackoverflow.com/a/22358422/548473
     @ResponseStatus(value = HttpStatus.UNPROCESSABLE_ENTITY)
@@ -44,7 +49,14 @@ public class ExceptionInfoHandler {
     @ResponseStatus(value = HttpStatus.CONFLICT)  // 409
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ErrorInfo conflict(HttpServletRequest req, DataIntegrityViolationException e) {
-        return logAndGetErrorInfo(req, e, true, DATA_ERROR);
+        String rootMsg = ValidationUtil.getRootCause(e).getMessage().toLowerCase().toLowerCase();
+        if (rootMsg.contains(EMAIL_CONSTRAINT_DB_EXCEPTION)) {
+            rootMsg = WRONG_EMAIL_MSG;
+        } else if (rootMsg.contains(DATE_TIME_CONSTRAINT_DB_EXCEPTION)) {
+            rootMsg = WRONG_DATE_TIME_MSG;
+        }
+        rootMsg = msgUtil.getLocalizedMessage(rootMsg);
+        return logAndGetErrorInfo(req, e, true, DATA_ERROR, rootMsg);
     }
 
     @ResponseStatus(value = HttpStatus.UNPROCESSABLE_ENTITY)  // 422

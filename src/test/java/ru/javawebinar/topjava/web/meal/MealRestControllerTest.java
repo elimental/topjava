@@ -5,9 +5,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.service.MealService;
 import ru.javawebinar.topjava.web.AbstractControllerTest;
+import ru.javawebinar.topjava.web.ExceptionInfoHandler;
 import ru.javawebinar.topjava.web.json.JsonUtil;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -135,5 +139,18 @@ class MealRestControllerTest extends AbstractControllerTest {
                 .content(JsonUtil.writeValue(created))
                 .with(userHttpBasic(ADMIN)))
                 .andExpect(status().isUnprocessableEntity());
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.NEVER)
+    void testCreateWithWrongTime() throws Exception {
+        Meal invalid = new Meal(null, MEAL1.getDateTime(), "XaB4|/|K", 400);
+        mockMvc.perform(post(REST_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.writeValue(invalid))
+                .with(userHttpBasic(USER)))
+                .andDo(print())
+                .andExpect(status().isConflict())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.detail").value(msgUtil.getLocalizedMessage(ExceptionInfoHandler.WRONG_DATE_TIME_MSG)));
     }
 }

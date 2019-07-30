@@ -1,6 +1,7 @@
 package ru.javawebinar.topjava.to;
 
 import org.hibernate.validator.constraints.Range;
+import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.util.UserUtil;
 
 import javax.validation.constraints.Email;
@@ -39,6 +40,10 @@ public class UserTo extends BaseTo implements Serializable {
         this.caloriesPerDay = caloriesPerDay;
     }
 
+    public UserTo(User u) {
+        this(u.getId(), u.getName(), u.getEmail(), u.getPassword(), u.getCaloriesPerDay());
+    }
+
     public String getPassword() {
         return password;
     }
@@ -63,12 +68,12 @@ public class UserTo extends BaseTo implements Serializable {
         this.email = email;
     }
 
-    public void setCaloriesPerDay(Integer caloriesPerDay) {
-        this.caloriesPerDay = caloriesPerDay;
-    }
-
     public Integer getCaloriesPerDay() {
         return caloriesPerDay;
+    }
+
+    public void setCaloriesPerDay(Integer caloriesPerDay) {
+        this.caloriesPerDay = caloriesPerDay;
     }
 
     @Override

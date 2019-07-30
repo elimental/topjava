@@ -13,8 +13,8 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
-import static ru.javawebinar.topjava.util.ValidationUtil.assureIdConsistent;
-import static ru.javawebinar.topjava.util.ValidationUtil.checkNew;
+import static ru.javawebinar.topjava.web.ValidationUtil.assureIdConsistent;
+import static ru.javawebinar.topjava.web.ValidationUtil.checkNew;
 
 public abstract class AbstractMealController {
     private final Logger log = LoggerFactory.getLogger(getClass());

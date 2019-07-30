@@ -3,10 +3,14 @@ package ru.javawebinar.topjava.web.user;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.to.UserTo;
 import ru.javawebinar.topjava.util.UserUtil;
 import ru.javawebinar.topjava.web.AbstractControllerTest;
+import ru.javawebinar.topjava.web.ExceptionInfoHandler;
 import ru.javawebinar.topjava.web.json.JsonUtil;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -71,5 +75,19 @@ class ProfileRestControllerTest extends AbstractControllerTest {
                 .andExpect(status().isNoContent());
 
         assertMatch(userService.getByEmail("newemail@ya.ru"), UserUtil.updateFromTo(new User(USER), updatedTo));
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.NEVER)
+    void testUpdateWithWrongEmail() throws Exception {
+        UserTo updatedTo = new UserTo(USER);
+        updatedTo.setEmail("admin@gmail.com");
+
+        mockMvc.perform(put(REST_URL).contentType(MediaType.APPLICATION_JSON)
+                .with(userHttpBasic(USER))
+                .content(JsonUtil.writeValue(updatedTo)))
+                .andDo(print())
+                .andExpect(status().isConflict())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.detail").value(msgUtil.getLocalizedMessage(ExceptionInfoHandler.WRONG_EMAIL_MSG)));
     }
 }
