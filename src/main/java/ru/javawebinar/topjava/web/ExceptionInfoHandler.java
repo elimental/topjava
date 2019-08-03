@@ -49,14 +49,18 @@ public class ExceptionInfoHandler {
     @ResponseStatus(value = HttpStatus.CONFLICT)  // 409
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ErrorInfo conflict(HttpServletRequest req, DataIntegrityViolationException e) {
-        String rootMsg = ValidationUtil.getRootCause(e).getMessage().toLowerCase().toLowerCase();
-        if (rootMsg.contains(EMAIL_CONSTRAINT_DB_EXCEPTION)) {
-            rootMsg = WRONG_EMAIL_MSG;
-        } else if (rootMsg.contains(DATE_TIME_CONSTRAINT_DB_EXCEPTION)) {
-            rootMsg = WRONG_DATE_TIME_MSG;
+        String rootMsg = ValidationUtil.getRootCause(e).getMessage();
+        if (rootMsg != null) {
+            rootMsg = rootMsg.toLowerCase();
+            if (rootMsg.contains(EMAIL_CONSTRAINT_DB_EXCEPTION)) {
+                rootMsg = WRONG_EMAIL_MSG;
+            } else if (rootMsg.contains(DATE_TIME_CONSTRAINT_DB_EXCEPTION)) {
+                rootMsg = WRONG_DATE_TIME_MSG;
+            }
+            rootMsg = msgUtil.getLocalizedMessage(rootMsg);
+            return logAndGetErrorInfo(req, e, true, VALIDATION_ERROR, rootMsg);
         }
-        rootMsg = msgUtil.getLocalizedMessage(rootMsg);
-        return logAndGetErrorInfo(req, e, true, DATA_ERROR, rootMsg);
+        return logAndGetErrorInfo(req, e, true, DATA_ERROR);
     }
 
     @ResponseStatus(value = HttpStatus.UNPROCESSABLE_ENTITY)  // 422
