@@ -3,6 +3,7 @@ package ru.javawebinar.topjava.web;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -57,7 +58,7 @@ public class ExceptionInfoHandler {
             } else if (rootMsg.contains(DATE_TIME_CONSTRAINT_DB_EXCEPTION)) {
                 rootMsg = WRONG_DATE_TIME_MSG;
             }
-            rootMsg = msgUtil.getLocalizedMessage(rootMsg);
+            rootMsg = msgUtil.getLocalizedMessage(rootMsg, LocaleContextHolder.getLocale());
             return logAndGetErrorInfo(req, e, true, VALIDATION_ERROR, rootMsg);
         }
         return logAndGetErrorInfo(req, e, true, DATA_ERROR);

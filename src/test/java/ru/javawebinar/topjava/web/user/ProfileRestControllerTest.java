@@ -13,6 +13,8 @@ import ru.javawebinar.topjava.web.AbstractControllerTest;
 import ru.javawebinar.topjava.web.ExceptionInfoHandler;
 import ru.javawebinar.topjava.web.json.JsonUtil;
 
+import java.util.Locale;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -88,6 +90,6 @@ class ProfileRestControllerTest extends AbstractControllerTest {
                 .content(JsonUtil.writeValue(updatedTo)))
                 .andDo(print())
                 .andExpect(status().isConflict())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.detail").value(msgUtil.getLocalizedMessage(ExceptionInfoHandler.WRONG_EMAIL_MSG)));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.detail").value(msgUtil.getLocalizedMessage(ExceptionInfoHandler.WRONG_EMAIL_MSG, new Locale("ru"))));
     }
 }
